@@ -54,7 +54,7 @@ print("")
 print("Liste des commandes: \n- cmd (permet l'utilisation des commandes consoles. Exemple: cmd cls) \
 	\n- mail mailpw smtpadr smtpport (paramètres pour la reception de données par mail de la victime)\
 	\n- scr (prend un screenshot sur l'ordinateur de la victime) \
-	\n rcvdata (recevoir les données collectées par mail) \
+	\n rcv (recevoir les données collectées par mail) \
 	\n- quit")
 msg_a_envoyer = b""
 
