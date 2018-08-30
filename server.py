@@ -23,7 +23,7 @@ while i < 1:
 # L'instruction ci-dessous peut lever une exception si le message
 # Réceptionné comporte des accents
 	print(msg_recu.decode())
-	connexion_avec_client.send(b"5 / 5")
+	connexion_avec_client.send(b"ok")
 	if msg_recu == b"quit":
 		print("Fermeture de la connexion")
 		i = i + 1
